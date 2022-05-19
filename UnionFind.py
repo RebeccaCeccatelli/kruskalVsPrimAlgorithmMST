@@ -20,7 +20,7 @@ class UnionFind:
         setx = self.findSi(x)
         sety = self.findSi(y)
 
-        toBeRemoved = setx    #insieme con lista più corta
+        toBeRemoved = setx
         toBeExtended = sety
         if sety.size < setx.size:
             toBeRemoved = sety
@@ -36,12 +36,6 @@ class UnionFind:
                 set = Si
                 break
         return set
-
-    def printInfo(self):
-        print("number of Si: ", len(self.S))
-        for set in self.S:
-            set.printSet()
-        print("**************")
 
     def findNodeWithValue(self, value):
         x = None

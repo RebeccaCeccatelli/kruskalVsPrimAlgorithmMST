@@ -1,10 +1,11 @@
 import unittest
 
-from Graph import Graph
-
 from timeit import default_timer as timer
 from matplotlib import pyplot as plt
+import matplotlib.patches as mpatches
 import numpy as np
+
+from Graph import Graph
 
 class MyTestCase(unittest.TestCase):
     def testKruskal(self):
@@ -102,16 +103,15 @@ class MyTestCase(unittest.TestCase):
     def testSameMSTWeight(self):
         V = 20
         probability = 60/100
-        graph = Graph.generateRandomGraph(V,probability)
-        while graph.isConnected() is False:
-            graph = Graph.generateRandomGraph(V,probability)
+        graph = Graph.generateConnectedGraph(V,probability)
+
         A, weightWithKruskal = graph.computeMSTWithKruskal()
         A, weightWithPrim = graph.computeMSTWithPrim(1)
 
         self.assertEqual(weightWithKruskal,weightWithPrim)
 
     def testComplexityIncreasingV(self):
-        fixedProbability = 100/100
+        fixedProbability = 80/100
         maxV = 40
         V = np.arange(1,maxV,1)
 
@@ -122,15 +122,6 @@ class MyTestCase(unittest.TestCase):
         for experiment in range (0,totExperiments,1):
             for v in V:
                 index = np.where(V == v)[0][0]
-                # graph = Graph.generateRandomGraph(v,fixedProbability)  #possibile equivalente con variabile booleana foundConnected
-                # while graph.isConnected() is False:
-                #     graph = Graph.generateRandomGraph(v,fixedProbability)
-
-                # foundConnected = False    #valutare se incapsulare queste righe dentro un metodo generateConnectedGraph()
-                # while foundConnected is False:
-                #     graph = Graph.generateRandomGraph(v,fixedProbability)
-                #     if graph.isConnected():
-                #         foundConnected = True
 
                 graph = Graph.generateConnectedGraph(v,fixedProbability)
 
@@ -143,7 +134,6 @@ class MyTestCase(unittest.TestCase):
 
                 kruskalComplexity[index] += endKruskal-startKruskal
                 primComplexity[index] += endPrim - startPrim
-            print(experiment)
 
         for value in kruskalComplexity:
             value /= totExperiments
@@ -151,28 +141,27 @@ class MyTestCase(unittest.TestCase):
             value /= totExperiments
 
         plt.plot(V,kruskalComplexity,'r',V,primComplexity,'g')
+        plt.title("Comparison between Kruskal's and Prim's time complexity, with fixed probability and increasing V")
+        plt.xlabel("V (number of nodes)")
+        plt.ylabel("seconds")
+        redPatch = mpatches.Patch(color = 'red', label = "Kruskal's Algorithm for MST")
+        greenPatch = mpatches.Patch(color = 'green', label = "Prim's Algorithm for MST")
+        plt.legend(handles = [redPatch, greenPatch])
         plt.show()
 
     def testComplexityIncreasingProbability(self):
         fixedV = 20
+        minProbability = 10
         maxProbability = 100
-        probabilities = np.arange(10,maxProbability,5)
+        probabilities = np.arange(minProbability,maxProbability,5)
 
         kruskalComplexity = [0]*len(probabilities)
         primComplexity = [0]*len(probabilities)
-        times = 10
-        for experiment in range(0,times,1):
+
+        totExperiments = 10
+        for experiment in range(0,totExperiments,1):
             for p in probabilities:
                 index = np.where(probabilities == p)[0][0]
-                # graph = Graph.generateRandomGraph(fixedV,p/100)  #possibile equivalente con variabile booleana foundConnected
-                # while graph.isConnected() is False:
-                #     graph = Graph.generateRandomGraph(fixedV,p/100)
-
-                # foundConnected = False
-                # while foundConnected is False:
-                #     graph = Graph.generateRandomGraph(fixedV,p/100)
-                #     if graph.isConnected():
-                #         foundConnected = True
 
                 graph = Graph.generateConnectedGraph(fixedV,p/100)
 
@@ -185,12 +174,19 @@ class MyTestCase(unittest.TestCase):
 
                 kruskalComplexity[index] += endKruskal-startKruskal
                 primComplexity[index] += endPrim-startPrim
+
         for value in kruskalComplexity:
-            value /= times
+            value /= totExperiments
         for value in primComplexity:
-            value /= times
+            value /= totExperiments
 
         plt.plot(probabilities,kruskalComplexity,'r',probabilities,primComplexity,'g')
+        plt.title("Comparison between Kruskal's and Prim's time complexity, with increasing probability and fixed V")
+        plt.xlabel("probability (out of 100)")
+        plt.ylabel("seconds")
+        redPatch = mpatches.Patch(color = 'red', label = "Kruskal's Algorithm for MST")
+        greenPatch = mpatches.Patch(color = 'green', label = "Prim's Algorithm for MST")
+        plt.legend(handles = [redPatch, greenPatch])
         plt.show()
 
 

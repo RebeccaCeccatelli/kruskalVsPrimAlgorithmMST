@@ -20,7 +20,7 @@ class MinHeap:
 
     def decreaseKey(self, i, newKeyValue):
         if newKeyValue > self.A[i].key:
-            print("errore: nuova chiave più grande della corrente") #fixme, rendere più elegante
+            print("error: new key bigger than the current one")
         else:
             self.A[i].key = newKeyValue
             while i > 1 and self.A[self.getParent(i)].key > self.A[i].key:
@@ -33,7 +33,7 @@ class MinHeap:
     def insert(self, node):
         self.size +=1
         self.A.append(node)
-        self.decreaseKey(self.size, node.key) #controllare se va bene, forse no
+        self.decreaseKey(self.size, node.key)
 
     def minHeapify(self, i):
         l = self.getLeftChild(i)
@@ -54,7 +54,7 @@ class MinHeap:
 
     def extractMin(self):
         if self.size < 1:
-            print("errore: underflow dell'heap")
+            print("error: heap underflow")
 
         minimum = self.A[1]
         self.A[1] = self.A[self.size]
@@ -64,21 +64,6 @@ class MinHeap:
         self.minHeapify(1)
 
         return minimum
-
-
-    def buildMinHeap(self, A):  #non funziona bene fixme
-        self.A = A
-        self.A.insert(0,MinHeapNode(None))
-        self.size = len(A)
-        for i in range(int(len(A)/2),0,-1):
-            self.minHeapify(i)
-
-    def printValue(self, i):
-        index = i
-        print(self.A[index])
-
-    def printArray(self):
-        print(self.A)
 
     def stillContains(self, nodeValue):
         found = False

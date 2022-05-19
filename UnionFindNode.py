@@ -8,5 +8,3 @@ class UnionFindNode(Node):
     def setRepresentative(self, representative):
         self.representative = representative
 
-    def printNode(self):
-        print("value: ", self.value, "repr: ", self.representative.value)

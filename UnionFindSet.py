@@ -1,4 +1,3 @@
-from UnionFindNode import UnionFindNode
 
 class Set:
     def __init__(self, firstElement):
@@ -10,10 +9,3 @@ class Set:
         self.list.append(element)
         element.setRepresentative(self.representative)
         self.size +=1
-
-    def printSet(self):
-        for x in self.list:
-            print(x.value)
-        print("repr: ", self.representative.value)
-        print(self.size)
-        print("----------------")

@@ -1,11 +1,11 @@
-from UnionFindNode import UnionFindNode
+import numpy as np
+from numpy import random
+
 from MinHeapNode import MinHeapNode
 from UnionFind import UnionFind
 from Edge import Edge
 from MinHeap import MinHeap
 
-import numpy as np
-from numpy import random
 
 class Graph:
     def __init__(self, V):
@@ -61,10 +61,7 @@ class Graph:
                 foundConnected = True
         return graph
 
-    def printMatrix(self):
-        print(self.matrix)
-        #for node in self.nodes:
-        #    print(node.value, node.representative.value)
+
     def setMatrix(self,matrix):
         self.matrix = matrix
         for i in range(0,self.V,1):
@@ -72,28 +69,7 @@ class Graph:
                 if self.matrix[i][j] != 0:
                     self.edges.append(Edge(i,j,self.matrix[i][j]))
 
-    # def setMatrix(self):
-    #     self.matrix = [[0,10,12,0,0,0,0,0,0],[10,0,9,8,0,0,0,0,0],[12,9,0,0,3,1,0,0,0],[0,8,0,0,7,0,8,5,0],[0,0,3,7,0,3,0,0,0],[0,0,1,0,3,0,0,6,0],[0,0,0,8,0,0,0,9,2],[0,0,0,5,0,6,9,0,11],[0,0,0,0,0,0,2,11,0]]
-    #     for i in range (0,self.V,1):
-    #         for j in range(0,self.V,1):
-    #             if self.matrix[i][j] !=0:
-    #                 self.edges.append(Edge(i,j,self.matrix[i][j]))
-
-    def setMatrix2(self):
-        self.matrix = [[0,24,13,13,22],[24,0,22,13,13],[13,22,0,19,14],[13,13,19,0,19],[22,13,14,19,0]]
-        for i in range(0,self.V,1):
-            for j in range(0,self.V,1):
-                if self.matrix[i][j] != 0:
-                    self.edges.append(Edge(i,j,self.matrix[i][j]))
-
-    def setMatrix3(self):
-        self.matrix = [[0,9,75,0,0],[9,0,95,19,42],[75,95,0,51,0],[0,19,51,0,31],[0,42,0,31,0]]
-        for i in range(0,self.V,1):
-            for j in range(0,self.V,1):
-                if self.matrix[i][j] != 0:
-                    self.edges.append(Edge(i,j,self.matrix[i][j]))
-
-    def computeMSTWithKruskal(self):  #testato, funziona
+    def computeMSTWithKruskal(self):
         A = []
         totalWeight = 0
         unionFind = UnionFind()
@@ -119,18 +95,20 @@ class Graph:
     def computeMSTWithPrim(self, rootIndex):
         A = []
         totalWeight = 0
-
         minHeap = MinHeap()
+
         for node in self.nodes:
             minHeap.insert(node)
         minHeap.decreaseKey(rootIndex,1)
-        size = len(minHeap.A)
+        sizeAfterFirstExtraction = len(minHeap.A)-1
 
         while len(minHeap.A) !=1:
             u = minHeap.extractMin()
-            if len(minHeap.A) != size-1:   #rendere più elegante, il size-1 non è ben leggibile
+
+            if len(minHeap.A) != sizeAfterFirstExtraction:
                 A.append(Edge(u.pigreco,u,u.key))
                 totalWeight += u.key
+
             for j in range(0,self.V,1):
                 weight = self.matrix[u.value][j]
                 if weight != 0:
@@ -138,4 +116,5 @@ class Graph:
                     if found and weight < v.key:
                         v.pigreco = u
                         minHeap.decreaseKey(minHeap.getIndex(v.value),weight)
+
         return A,totalWeight
