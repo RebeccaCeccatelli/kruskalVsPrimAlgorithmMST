@@ -8,7 +8,8 @@ import numpy as np
 from Graph import Graph
 
 class MyTestCase(unittest.TestCase):
-    def testKruskal(self):
+
+    def testKruskal(self):      #tests Kruskal's algorithm with 3 different graphs
         matrix1 = [[0,10,12,0,0,0,0,0,0],[10,0,9,8,0,0,0,0,0],[12,9,0,0,3,1,0,0,0],[0,8,0,0,7,0,8,5,0],[0,0,3,7,0,3,0,0,0],[0,0,1,0,3,0,0,6,0],[0,0,0,8,0,0,0,9,2],[0,0,0,5,0,6,9,0,11],[0,0,0,0,0,0,2,11,0]]
         graph1 = Graph(9)
         graph1.setMatrix(matrix1)
@@ -54,12 +55,13 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual(edge.weight, expectedA[i])
             i +=1
 
-    def testPrim(self):
+    def testPrim(self):     #tests Prim's algorihtm with 3 different graphs
         matrix1 = [[0,10,12,0,0,0,0,0,0],[10,0,9,8,0,0,0,0,0],[12,9,0,0,3,1,0,0,0],[0,8,0,0,7,0,8,5,0],[0,0,3,7,0,3,0,0,0],[0,0,1,0,3,0,0,6,0],[0,0,0,8,0,0,0,9,2],[0,0,0,5,0,6,9,0,11],[0,0,0,0,0,0,2,11,0]]
         graph1 = Graph(9)
         graph1.setMatrix(matrix1)
         A = graph1.computeMSTWithPrim(1)
 
+        #different order compared to Kruskal's result but same edges
         expectedA = [0,1,10,  1,3,8,  3,7,5,  7,5,6,  5,2,1,  5,4,3,  3,6,8,  6,8,2]
         i = 0
         for edge in A:
@@ -110,16 +112,16 @@ class MyTestCase(unittest.TestCase):
 
         self.assertEqual(weightWithKruskal,weightWithPrim)
 
-    def testComplexityIncreasingV(self):
-        fixedProbability = 80/100
-        maxV = 40
+    def testComplexityIncreasingV(self):        #probability is fixed and V goes from 1 to an arbitrary value
+        fixedProbability = 13/100
+        maxV = 350
         V = np.arange(1,maxV,1)
 
         kruskalComplexity = [0]*len(V)
         primComplexity = [0]*len(V)
 
-        totExperiments = 10
-        for experiment in range (0,totExperiments,1):
+        totExperiments = 3    #repeats the experiment with the same V many times and then computes the mean, for each V
+        for experiment in range (0,totExperiments,1):       #collects data for plotting
             for v in V:
                 index = np.where(V == v)[0][0]
 
@@ -140,8 +142,11 @@ class MyTestCase(unittest.TestCase):
         for value in primComplexity:
             value /= totExperiments
 
-        plt.plot(V,kruskalComplexity,'r',V,primComplexity,'g')
-        plt.title("Comparison between Kruskal's and Prim's time complexity, with fixed probability and increasing V")
+        kruskalMovingAverage = self.computeMovingAverage(kruskalComplexity)
+        primMovingAverage = self.computeMovingAverage(primComplexity)
+
+        plt.plot(V,kruskalMovingAverage,'r',V,primMovingAverage,'g')        #plotting commands
+        plt.title("Comparison between Kruskal's and Prim's time complexity, with fixed probability and increasing V\nBig graphs (V from 1 to 100), p = 10")
         plt.xlabel("V (number of nodes)")
         plt.ylabel("seconds")
         redPatch = mpatches.Patch(color = 'red', label = "Kruskal's Algorithm for MST")
@@ -149,8 +154,8 @@ class MyTestCase(unittest.TestCase):
         plt.legend(handles = [redPatch, greenPatch])
         plt.show()
 
-    def testComplexityIncreasingProbability(self):
-        fixedV = 20
+    def testComplexityIncreasingProbability(self):      #V is fixed and probability goes from minProbability to 100/100
+        fixedV = 120
         minProbability = 10
         maxProbability = 100
         probabilities = np.arange(minProbability,maxProbability,5)
@@ -158,8 +163,8 @@ class MyTestCase(unittest.TestCase):
         kruskalComplexity = [0]*len(probabilities)
         primComplexity = [0]*len(probabilities)
 
-        totExperiments = 10
-        for experiment in range(0,totExperiments,1):
+        totExperiments = 10     #repeats the experiment with the same p many times and than computes the mean, for each p
+        for experiment in range(0,totExperiments,1):        #collects data for plotting
             for p in probabilities:
                 index = np.where(probabilities == p)[0][0]
 
@@ -175,12 +180,16 @@ class MyTestCase(unittest.TestCase):
                 kruskalComplexity[index] += endKruskal-startKruskal
                 primComplexity[index] += endPrim-startPrim
 
+
         for value in kruskalComplexity:
             value /= totExperiments
         for value in primComplexity:
             value /= totExperiments
 
-        plt.plot(probabilities,kruskalComplexity,'r',probabilities,primComplexity,'g')
+        kruskalMovingAverage = self.computeMovingAverage(kruskalComplexity)
+        primMovingAverage = self.computeMovingAverage(primComplexity)
+
+        plt.plot(probabilities,kruskalMovingAverage,'r',probabilities,primMovingAverage,'g')       #plotting commands
         plt.title("Comparison between Kruskal's and Prim's time complexity, with increasing probability and fixed V")
         plt.xlabel("probability (out of 100)")
         plt.ylabel("seconds")
@@ -188,6 +197,17 @@ class MyTestCase(unittest.TestCase):
         greenPatch = mpatches.Patch(color = 'green', label = "Prim's Algorithm for MST")
         plt.legend(handles = [redPatch, greenPatch])
         plt.show()
+
+    def computeMovingAverage(self, array):
+        movingAverages = []
+        cumSum = np.cumsum(array)
+
+        i=1
+        while i<=len(array):
+            windowAverage = round(cumSum[i-1]/i, 4)
+            movingAverages.append(windowAverage)
+            i +=1
+        return movingAverages
 
 
 if __name__ == '__main__':

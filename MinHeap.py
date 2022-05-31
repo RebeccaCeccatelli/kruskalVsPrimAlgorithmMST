@@ -3,7 +3,7 @@ from MinHeapNode import MinHeapNode
 class MinHeap:
     def __init__(self):
         self.A = []
-        self.A.insert(0,MinHeapNode(None))
+        self.A.insert(0,MinHeapNode(None))      #the array is now 1-based
         self.size = 0
 
     def getParent(self, keyIndex):
@@ -24,7 +24,7 @@ class MinHeap:
         else:
             self.A[i].key = newKeyValue
             while i > 1 and self.A[self.getParent(i)].key > self.A[i].key:
-                tmp = self.A[self.getParent(i)]
+                tmp = self.A[self.getParent(i)]     #swap
                 self.A[self.getParent(i)] = self.A[i]
                 self.A[i] = tmp
 
@@ -65,7 +65,7 @@ class MinHeap:
 
         return minimum
 
-    def stillContains(self, nodeValue):
+    def stillContains(self, nodeValue):     #used in Prim's algorithm to check if a node is in the queue or not
         found = False
         v = None
         for node in self.A:
@@ -75,7 +75,7 @@ class MinHeap:
                 break
         return found, v
 
-    def getIndex(self, nodeValue):
+    def getIndex(self, nodeValue):      #used in Prim's algorithm to get the index of the key to decrease
         index = 0
         for node in self.A:
             if node.value == nodeValue:

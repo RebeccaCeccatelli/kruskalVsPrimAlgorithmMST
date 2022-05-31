@@ -4,3 +4,4 @@ class Edge:
         self.u = u
         self.v = v
         self.weight = weight
+
